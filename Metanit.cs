@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
+using Bogus;
 
 namespace ParserMetanit
 {
@@ -26,8 +27,8 @@ namespace ParserMetanit
         private string Url => "https://metanit.com";
         private string TargetDir => "metanit";
         private string ZipF => "metanit.zip";
-        private string UserAgent =>
-            @"""Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.6) Gecko/20070802 SeaMonkey/1.1.4""";
+        private string UserAgent => new Faker().Internet.UserAgent();
+
 
         public void Parser()
         {
@@ -36,7 +37,6 @@ namespace ParserMetanit
             CreateDelDir(fPath, zipPath);
             DownloadSite(fPath);
             ZipDir(fPath, zipPath);
-            
         }
 
         private void CreateDelDir(string tempPath, string zipPath)
@@ -59,7 +59,11 @@ namespace ParserMetanit
 
         private void DownloadSite(string fPath)
         {
-            var myProcess = new Process {StartInfo = new ProcessStartInfo("wget", $"-P {fPath} -U {UserAgent} -r -k -l0 -t 10 -p -E -nc {Url}")};
+            var myProcess = new Process
+            {
+                StartInfo = new ProcessStartInfo("wget",
+                    $"-P {fPath} -U \"{UserAgent}\" -r -k -l0 -t 10 -p -E -nc {Url}")
+            };
             myProcess.Start();
             //Console.WriteLine(myProcess.StartInfo.Arguments);
             myProcess.WaitForExit();
